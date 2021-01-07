@@ -56,10 +56,10 @@ echo "Fazendo backups de arquivos de configuracao"  &>> $DIR_LOG
 
 echo " 2.2  Atualizando o repositorio centreon EM:  $DATE " &>> $DIR_LOG
 
- yum install -y centos-release-scl-rh &>>
+ yum install centos-release-scl-rh -y 
  ERROR_COMMAND
  
- yum install -y http://yum.centreon.com/standard/20.10/el7/stable/noarch/RPMS/centreon-release-20.10-2.el7.centos.noarch.rpm
+ yum install http://yum.centreon.com/standard/20.10/el7/stable/noarch/RPMS/centreon-release-20.10-2.el7.centos.noarch.rpm -y 
  ERROR_COMMAND
 
 echo "# 2.3 Limpe o cache do yum EM:  $DATE  " &>> $DIR_LOG 
@@ -69,7 +69,7 @@ echo "# 2.3 Limpe o cache do yum EM:  $DATE  " &>> $DIR_LOG
 
 echo "# 2.4  Atualizando todos os componentes os componentes EM:  $DATE" &>> $DIR_LOG  
 
- yum update centreon\*
+ yum update centreon\* -y 
  ERROR_COMMAND
 
 echo "# 2.5 Atualizando a versão do PHP EM:  $DATE " &>> $DIR_LOG 
@@ -92,9 +92,15 @@ echo "# 2.7 Desabilitando o servico antigo e habilitando o servico novo do PHP E
  ERROR_COMMAND
  
 
-echo "# 2.8 Instalando novo SSL EM:  $DATE  " &>> $DIR_LOG 
+#Configurando timezone
 
- yum install -y httpd24-mod_ssl
+echo " date.timezone = America/Bahia" >> /etc/opt/rh/rh-php72/php.d/50-centreon.ini
+sed -i 's/;date.timezone =/date.timezone = America\/Bahia /g' /etc/opt/rh/rh-php72/php.ini 
+
+
+echo "# 2.8 Instalando novo SSL EM:  $DATE  " &>> $DIR_LOG  
+
+ yum install  httpd24-mod_ssl -y 
  ERROR_COMMAND
  
 
@@ -124,24 +130,33 @@ echo "# 2.10 Finalizando a atualizacao , recarregando o servidor apache EM:  $DA
  echo  " !!! continue o processo de atualizacao na interface web !!!!" &>> $DIR_LOG 
  echo  " !!! ATUALIZE AS EXTENSION !!!!" &>> $DIR_LOG 
  echo  " !!! ATUALIZE A LICENCA DOS PLUGINS E OS PLUGIN PACKS MANAGER !!!!" &>> $DIR_LOG 
+ echo ""
+ echo " DIGITE 0 PARA CONTINUAR "
+ read next
+ 
+	if [ $next = 0  ]
+	
+	then 
+	
 
-# 2.11 ativando o novo gerenciador de tarefas de centcore para gorgone
+echo "# 2.11 ativando o novo gerenciador de tarefas de centcore para gorgone " 
 
+
+ 
  systemctl stop centcore
  ERROR_COMMAND
  
- systemctl disable centcore
- ERROR_COMMAND
-  
-  
  systemctl enable gorgoned
  ERROR_COMMAND
  
  systemctl start gorgoned
  ERROR_COMMAND
  
+	else 
+	echo "É NECESSÁRIO TERMINAR A CONFIGURAÇÃO WEB" 
+ 
 
-# 2.12 Altere os direitos sobre os arquivos RRD de estatísticas executando o seguinte comando
+echo "# 2.12 Altere os direitos sobre os arquivos RRD de estatísticas executando o seguinte comando"  &>> $DIR_LOG 
 
  chown -R centreon-gorgone /var/lib/centreon/nagios-perf/*   
  ERROR_COMMAND
@@ -149,9 +164,9 @@ echo "# 2.10 Finalizando a atualizacao , recarregando o servidor apache EM:  $DA
 
 
  echo " !!! Faca reload de todos os pollers do central via interface web !!!" &>> $DIR_LOG 
-
  exit 0 
-
+ 
+fi
 
 	elif [ $choice = 2 ] 
 			then
@@ -161,11 +176,11 @@ DB_VERSION=` mysql -V | cut -d " " -f6| cut -d - -f1`
 
 	if [ $DB_VERSION == "10.1.36" ]
 		   then
-			
+		   
 
 # Atualizando banco mariadb de 10.1 para 10.2
 
-echo #INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 10.2 # &>> $DIR_LOG 
+echo "#INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 10.2 #" &>> $DIR_LOG 
 
 # Atualizar servidor MariaDB
 
@@ -187,7 +202,7 @@ echo #INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 1
 
 #Instale a versão 10.2:
 
- yum install MariaDB-server-10.2\* MariaDB-client-10.2\* MariaDB-shared-10.2\* MariaDB-compat-10.2\* MariaDB-common-10.2\*
+ yum install MariaDB-server-10.2\* MariaDB-client-10.2\* MariaDB-shared-10.2\* MariaDB-compat-10.2\* MariaDB-common-10.2\* -y
  ERROR_COMMAND
  
 
@@ -201,17 +216,22 @@ echo #INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 1
 
  mysql_upgrade
  ERROR_COMMAND
+ 
+ exit 0
+ 
+ 
+ else
+	echo " ERRO O BANCO ESTÁ NA VERSÃO $DB_VERSION "
 
 fi
 
 	elif [ $choice = 3 ]
 			then
-	
 
-if [ $DB_VERSION == "10.2.36" ]
-			then
-			
-			
+DB_VERSION=` mysql -V | cut -d " " -f6| cut -d - -f1`
+
+if [ $DB_VERSION == "10.2.34" ]
+			then			
 			
 # Atualizando banco mariadb de 10.2 para 10.3
 
@@ -223,6 +243,8 @@ echo "#INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 
 # da maneira recomendada por MariaDB:
 
 # Pare o serviço mariadb:
+
+
  systemctl stop mariadb
  ERROR_COMMAND
  
@@ -234,7 +256,7 @@ echo "#INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 
 
 # Instale a versão 10.3:
 
- yum install MariaDB-server-10.3\* MariaDB-client-10.3\* MariaDB-shared-10.3\* MariaDB-compat-10.3\* MariaDB-common-10.3\*
+ yum install MariaDB-server-10.3\* MariaDB-client-10.3\* MariaDB-shared-10.3\* MariaDB-compat-10.3\* MariaDB-common-10.3\* -y
  ERROR_COMMAND
  
 
@@ -254,6 +276,11 @@ echo "#INICIANDO O PROCESSO DE INSTALAÇÃO DO NOVO BANCO DE DADOS VERSÃO para 
 
  systemctl enable mariadb
  ERROR_COMMAND
+ 
+ exit 0 
+ 
+	else
+	echo " ERRO O BANCO ESTÁ NA VERSÃO $DB_VERSION "
  
  fi
  
