@@ -72,12 +72,8 @@ echo "# 2.4  Atualizando todos os componentes os componentes EM:  $DATE" &>> $DI
  yum update centreon\* -y 
  ERROR_COMMAND
 
-echo "# 2.5 Atualizando a versão do PHP EM:  $DATE " &>> $DIR_LOG 
 
-# 2.6 Atualizar timezone do PHP
-# echo "date.timezone = Europe/Paris" >> /etc/opt/rh/rh-php72/php.d/50-centreon.ini
-
-echo "# 2.7 Desabilitando o servico antigo e habilitando o servico novo do PHP EM:  $DATE "  &>> $DIR_LOG 
+echo "# 2.5 Desabilitando o servico antigo e habilitando o servico novo do PHP EM:  $DATE "  &>> $DIR_LOG 
 
  systemctl disable rh-php71-php-fpm
  ERROR_COMMAND
@@ -92,10 +88,15 @@ echo "# 2.7 Desabilitando o servico antigo e habilitando o servico novo do PHP E
  ERROR_COMMAND
  
 
-#Configurando timezone
+# 2.6 Configurando timezone
 
-echo " date.timezone = America/Bahia" >> /etc/opt/rh/rh-php72/php.d/50-centreon.ini
+echo "date.timezone = America/Bahia" >> /etc/opt/rh/rh-php72/php.d/50-centreon.ini
 sed -i 's/;date.timezone =/date.timezone = America\/Bahia /g' /etc/opt/rh/rh-php72/php.ini 
+
+# 2.7 restart do servico
+
+systemctl restart rh-php72-php-fpm
+ERROR_COMMAND
 
 
 echo "# 2.8 Instalando novo SSL EM:  $DATE  " &>> $DIR_LOG  
@@ -152,18 +153,22 @@ echo "# 2.11 ativando o novo gerenciador de tarefas de centcore para gorgone "
  systemctl start gorgoned
  ERROR_COMMAND
  
-	else 
-	echo "É NECESSÁRIO TERMINAR A CONFIGURAÇÃO WEB" 
+ echo "# 2.12 Altere os direitos sobre os arquivos RRD de estatísticas executando o seguinte comando"  &>> $DIR_LOG 
  
-
-echo "# 2.12 Altere os direitos sobre os arquivos RRD de estatísticas executando o seguinte comando"  &>> $DIR_LOG 
-
  chown -R centreon-gorgone /var/lib/centreon/nagios-perf/*   
  ERROR_COMMAND
+
+	else 
+	echo "É NECESSÁRIO TERMINAR A CONFIGURAÇÃO WEB" 
+    echo " !!! Faca reload de todos os pollers do central via interface web !!!" 
  
-
-
- echo " !!! Faca reload de todos os pollers do central via interface web !!!" &>> $DIR_LOG 
+ systemctl restart ntpd
+ ERROR_COMMAND
+ 
+ systemctl restart gorgoned cbd centengine
+ ERROR_COMMAND
+ 
+ 
  exit 0 
  
 fi
