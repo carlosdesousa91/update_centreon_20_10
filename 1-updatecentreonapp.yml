@@ -13,7 +13,7 @@
 
 ---
 - hosts: '{{ host }}'
-  remote_user: gtiadm
+  remote_user: xxxx
   become: True
   any_errors_fatal: True
   tasks:
