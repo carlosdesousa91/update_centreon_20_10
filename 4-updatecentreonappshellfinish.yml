@@ -1,0 +1,33 @@
+#######################################################################
+##
+##   nome do script yaml: 4-updatecentreonappshellfinish.yml
+##   descricao: Este script foi feito para atualizar a versao 18.10 para 20.10.
+##   da aplicação centreon.
+##   autor: marcos antonio rodrigues da silva junior.
+##   email: marcos.rodrigues@terceiro.rnp.br.
+##   data de criacao: 02/12/2020.
+##   chamado de criacao/motivo: N/A  (atualizacao da aplicacao para uma versao mais nova).
+##   versao 1.0
+##
+##########################################################################
+
+---
+- hosts: '{{ host }}'
+  remote_user: gtiadm
+  become: True
+  any_errors_fatal: True
+  tasks:
+      - name: "1° Atualizando a base do timezone  tzdata"
+        yum:
+           name: tzdata
+           state: latest
+           update_cache: yes
+
+      - name: "2° Restart dos servicos ntpd, gorgoned, cbd, httpd24-httpd, centreon  para finalizar"
+        service: name={{ item }} state=restarted
+        with_items:
+           - ntpd
+           - gorgoned
+           - cbd
+           - httpd24-httpd
+           - centreon
