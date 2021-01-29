@@ -1,0 +1,125 @@
+#######################################################################
+##
+##   nome do script yaml: 1-updatecentreonapp.yml
+##   descricao: Este script foi feito para atualizar a versao 18.10 para 20.10.
+##   da aplicação centreon.
+##   autor: marcos antonio rodrigues da silva junior.
+##   email: marcos.rodrigues@terceiro.rnp.br.
+##   data de criacao: 02/12/2020.
+##   chamado de criacao/motivo: N/A  (atualizacao da aplicacao para uma versao mais nova).
+##   versao 1.0
+##
+##########################################################################
+
+---
+- hosts: '{{ host }}'
+  remote_user: gtiadm
+  become: True
+  any_errors_fatal: True
+  tasks:
+      - name: "1°- Atualizando o repositorio do centreon e instalando o servico httpd24-mod_ssl epel-release e perl-Linux-Inotify2"
+        yum:
+          name:
+            - centos-release-scl-rh
+            - http://yum.centreon.com/standard/20.10/el7/stable/noarch/RPMS/centreon-release-20.10-2.el7.centos.noarch.rpm
+            - epel-release
+            - https://download-ib01.fedoraproject.org/pub/epel/7/x86_64/Packages/p/perl-Linux-Inotify2-1.22-4.el7.x86_64.rpm
+            - httpd24-mod_ssl
+            - yum-utils
+          state: latest
+          update_cache : True
+
+      - name: "2°- Limpando o cache do yum"
+        shell: yum-complete-transaction --cleanup-only ; yum clean all --enablerepo=*
+        args:
+          executable: /bin/bash
+          chdir: /tmp
+          warn: False
+
+      - name: "3° - Atualizando todos os componentes do Centreon"
+        yum:
+          name: 'centreon*'
+          state: latest
+          skip_broken: yes
+          update_cache : True
+
+      - name: "4° Desabilitando e parando os servicos antigos rh-php71-php-fpm , httpd "
+        service: name={{ item }} state=stopped enabled=no
+        with_items:
+          - rh-php71-php-fpm
+          - httpd
+
+      - name: "5° Parando o servico antigo centcore"
+        shell:
+          cmd: systemctl stop centcore
+          chdir: /tmp
+        ignore_errors: yes
+
+      - name: "6° Ajustando o arquivo de redirect para o novo diretorio do apache2.4"
+        shell:
+          cmd: cp -a /etc/httpd/conf.d/redirecttossl.conf /opt/rh/httpd24/root/etc/httpd/conf.d/
+          chdir: /tmp
+
+      - name: "7° Criando o arquivo .htaccess configurado no servidor remoto em /usr/share/centreon/www/"
+        copy:
+          src:  /home/.htaccess
+          dest: /usr/share/centreon/www/
+          owner: centreon
+          group: centreon
+          force: no
+          mode: '0775'
+
+      - name: "8° Criando arquivo de backup para ssl.conf"
+        shell:
+          cmd: cp -a /etc/httpd/conf.d/ssl.conf /home/gtiadm/ssl-backup-conf
+          chdir: /tmp
+
+      - name: "9° Configurando o arquivo ssl.conf no novo diretorio"
+        copy:
+          src:  /home/ssl.conf
+          dest: /opt/rh/httpd24/root/etc/httpd/conf.d/
+          owner: root
+          group: root
+          force: yes
+          mode: '0644'
+
+      - name: "10° Configurando o arquivo pollerSync como solucao de contorno de visualizacao de graficos"
+        copy:
+          src:  /home/pollerSync
+          dest: /etc/cron.d/
+          owner: root
+          group: root
+          force: yes
+          mode: '0644'
+
+      - name: "11° Habilitando no boot e subindo os novos servicos rh-php72-php-fpm , httpd24-httpd , gorgoned "
+        service: name={{ item }} enabled=yes state=started
+        with_items:
+          - rh-php72-php-fpm
+          - httpd24-httpd
+          - gorgoned
+
+      - name: "12°- Configurando timezone"
+        shell: echo "date.timezone = America/Bahia" >> /etc/opt/rh/rh-php72/php.d/50-centreon.ini
+        args:
+          executable: /bin/bash
+          chdir: /tmp
+
+      - name: "13°- Configurando timezone 2 "
+        replace:
+          path: /etc/opt/rh/rh-php72/php.ini
+          regexp: '^(;date.timezone =)$'
+          replace: 'date.timezone = America/Bahia '
+          backup: yes
+
+      - name: "14° Alterando os direitos sobre os arq. RRD em /var/lib/centreon/nagios-perf*"
+        file:
+          path: /var/lib/centreon/nagios-perf
+          state: directory
+          recurse: yes
+          owner: centreon-gorgone
+
+      - name: "15° Restart no servico rh-php72-php-fpm"
+        service:
+          name: rh-php72-php-fpm
+          state: restarted
