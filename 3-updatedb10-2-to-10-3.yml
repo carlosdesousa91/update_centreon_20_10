@@ -1,0 +1,47 @@
+#######################################################################
+##
+##   nome do script yaml: 3-updatedb10-2-to-10-3.yml
+##   descricao: Este script foi feito para atualizar o banco mariadb da aplicacao centreon da
+#    versao 10.2 para versao 10.3.
+##   autor: marcos antonio rodrigues da silva junior.
+##   email: marcos.rodrigues@terceiro.rnp.br.
+##   data de criacao: 02/12/2020.
+##   chamado de criacao/motivo: N/A  (atualizacao do banco de dados para uma versao mais nova).
+##   versao 1.0
+##
+##########################################################################
+
+---
+- hosts: '{{ host }}'
+  remote_user: gtiadm
+  become: True
+  any_errors_fatal: True
+  tasks:
+
+      - name: "1° Parando o servico  de banco mariadb "
+        service:
+          name: mariadb
+          state: stopped
+
+      - name: "2° Desinstalando a versao 10.2 do mariadb"
+        shell:
+          cmd: rpm --erase --nodeps --allmatches --verbose MariaDB-server MariaDB-client MariaDB-shared MariaDB-compat MariaDB-common
+          chdir: /tmp
+          warn: False
+
+      - name: "3° Instalando a nova versao do mariadb 10.3"
+        shell:
+          cmd: yum install MariaDB-server-10.3\* MariaDB-client-10.3\* MariaDB-shared-10.3\* MariaDB-compat-10.3\* MariaDB-common-10.3\* -y
+          chdir: /tmp
+          warn: False
+
+      - name: "4° Subindo o servico de banco mariadb"
+        service:
+          name: mariadb
+          state: started
+          enabled: yes
+
+      - name: "5 Iniciando o processo de atualizacao do mariadb"
+        shell:
+          cmd: mysql_upgrade
+          chdir: /tmp
