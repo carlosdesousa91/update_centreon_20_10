@@ -1,3 +1,58 @@
+# Procedimento - Pagina de login:
+## 01 - logo:
+
+A logo externa deve ser substituída no caminho: /usr/share/centreon/www/img/centreon.png
+
+## 02 - Botão login:
+
+Alterar cor do botão login
+
+diretorio: /usr/share/centreon/www/Themes/Centreon-2/
+arquivo: login.css
+Procurar por: .bt_info
+Alterar de: background: #00bfb3 !important;
+Para: background: #003399 !important;
+
+Procurar por: input[type="submit"].bt_info:hover
+Alterar de: background-color: #00a499 !important;
+Para: background: #003399 !important;
+
+## Procedimento - Front-End:
+### 01 - logo-Icone:
+
+no arquivo /usr/share/centreon/www/static/vendor.e7a65e18.js localizar as imagens e substituir pela abaixo:
+
+"img/centreon.png"
+
+"/centreon/img/centreon_mini.png"
+
+Obs: as imagens originais são no formato base64, deve localizar toda a string e troca, ex: data:image/png;base64,iVBORw0KGg...
+
+incluir também o estilo abaixo para no fim do arquivo /usr/share/centreon/www/static/vendor.e7f5e355.chunk.css:
+
+```
+
+.logo-mini__1zeEQ img{
+height:40px;
+width:40px;
+left: 3px;
+position: absolute;
+top: 5px;
+}
+
+```
+
+### 02 - barras:
+
+no arquivo /usr/share/centreon/www/template/css/main.31ac5dab.chunk.css localizar a cor do background da barra e do footer e substituir.
+
+
+
+### 03 - Hard only:
+
+no arquivo /usr/share/centreon/www/include/eventLogs/template/viewLog.ihtml procurar o input com o id="ohId" e incluir o atributo checked="checked", com isso o checkbox já virá marcado.
+
+
 # Procedimento - Incluir ícones WeatherMap/viaIpê/splunk no Centreon (versão:20.10.0)
 ## 01 - Menu:
 
@@ -32,7 +87,7 @@ margin-top: 10px;
 <!--<span>Topologia de rede</span>-->
 <td>
 <a title="Splunk" onclick="iframe('https://operacao.rnp.br:8080')">
-<img src="https://rtview.com/wp-content/uploads/2016/10/mzl.tfigcody.png" style="display:inline-block; width:25px; "></a>
+<img src="./img/splunkIcon.png" style="display:inline-block; width:25px; "></a>
 </td>
 <td>
 <a title="Rede Ip&ecirc;" onclick="iframe('https://trafego.rnp.br/cacti/plugins/weathermap/weathermap-cacti-plugin-public.php?action=viewmap&amp;id=ab66cf5b1230229dda5f')">
