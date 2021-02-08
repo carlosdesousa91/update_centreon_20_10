@@ -3,8 +3,9 @@
 
 ### no arquivo /usr/share/centreon/www/index.html incluir o style dentro da "head" do arquivo html:
 
+``` 
 
-``` <style>
+<style>
 #topologia{
 position: absolute;
 z-index: 1;
@@ -17,13 +18,16 @@ right: 650px;
 height: 40px;
 margin-top: 10px;
 }
-</style> ```
+</style> 
+
+```
 
 
 ### e a div dentro do "body" do arquivo html:
 
 
-```<div id="topologia">
+```
+<div id="topologia">
 <tr>
 <!--<span>Topologia de rede</span>-->
 <td>
@@ -39,13 +43,15 @@ margin-top: 10px;
 <img src="./img/faviconViaIpe.png" style="display:inline-block; width:22px; padding-left: 6px; border-right: 1px solid #e7e7e8; padding-right: 16px;"></a>
 </td>
 </tr>
-</div> ```
+</div> 
+```
 
 
 
 ### e o script dentro do "head" do arquivo html:
 
-```<script>
+```
+<script>
         function iframe(url){
                 var jss3 = document.getElementsByClassName('jss3')[0];
                 var div = jss3.childNodes[0];
@@ -53,4 +59,5 @@ margin-top: 10px;
                 div.innerHTML = '<iframe id="main-content" title="Main Content" frameborder="0" scrolling="yes" class="" src="'+url+'" style="width: 100%; height: 100%;"></iframe>';
                 document.getElementById("main-content").src = url;
         };
-</script>```
+</script>
+```
