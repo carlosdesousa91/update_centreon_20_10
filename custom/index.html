@@ -1,0 +1,57 @@
+<!doctype html><html lang="en" style="margin:0;padding:0;width:100%;height:100%;"><head><meta charset="utf-8"><link rel="shortcut icon" href="./img/favicon.ico"><meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name="theme-color" content="#000000"><base href="/centreon/"><title>Centreon - IT & Network Monitoring</title><link href="./static/vendor.e7f5e355.chunk.css" rel="stylesheet"><link href="./static/main.63dc8264.chunk.css" rel="stylesheet">
+<style>
+#topologia{
+position: absolute;
+z-index: 1;
+width: 190px;
+font-size: .6875rem;
+color: #fff;
+font-family: Roboto Light;
+text-transform: lowercase;
+right: 650px;
+height: 40px;
+margin-top: 10px;
+}
+</style>
+<script>
+ 	function iframe(url){
+		var jss3 = document.getElementsByClassName('jss3')[0];
+		//jss3.removeChild(jss3.lastChild);
+		//var div = document.createElement("div");
+		var div = jss3.childNodes[0];
+		//var old = document.getElementsByClassName('jss3')[0];
+		//var ocultar = document.createElement("div");
+		//ocultar.innerHTML = old.innerHTML;
+		//jss3.appendChild(ocultar);
+		//alert(ocultar.innerHTML);
+		//div.className = "jss3";
+		div.style.display = "block";
+		div.innerHTML = '<iframe id="main-content" title="Main Content" frameborder="0" scrolling="yes" class="" src="'+url+'" style="width: 100%; height: 100%;"></iframe>';
+		//jss3.appendChild(ocultar);
+		document.getElementById("main-content").src = url;
+	};
+</script>
+</head><body style="margin:0;padding:0;width:100%;height:100%;">
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<div id="topologia">
+<tr>
+<!--<span>Topologia de rede</span>-->
+<td>
+<a title="Splunk" onclick="iframe('https://operacao.rnp.br:8080')">
+<img src="https://rtview.com/wp-content/uploads/2016/10/mzl.tfigcody.png" style="display:inline-block; width:25px; "></a>
+</td>
+<td>
+<a title="Rede Ip&ecirc;" onclick="iframe('https://trafego.rnp.br/cacti/plugins/weathermap/weathermap-cacti-plugin-public.php?action=viewmap&amp;id=ab66cf5b1230229dda5f')">
+<img src="./img/redeIpe4.png" style="display:inline-block; width:30px; padding-left: 6px; "></a>
+</td>
+<td>
+<a title="Via Ip&ecirc;" onclick="iframe('https://viaipe.rnp.br/?embedded=true')">
+<img src="./img/faviconViaIpe.png" style="display:inline-block; width:22px; padding-left: 6px; border-right: 1px solid #e7e7e8; padding-right: 16px;"></a>
+</td>
+</tr>
+</div>
+<div id="root"></div>
+<script src="./static/runtime~main.6503ebbe.js"></script>
+<script src="./static/vendor.e7a65e18.js"></script>
+<script src="./static/main.9c2882c2.chunk.js"></script>
+</body></html>
