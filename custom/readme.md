@@ -44,10 +44,11 @@ top: 5px;
 
 ### 02 - barras:
 
-#### no arquivo /usr/share/centreon/www/static/main.63dc8264.chunk.css localizar a cor do header e do footer e substituir.
+#### no arquivo /usr/share/centreon/www/static/main.63dc8264.chunk.css localizar a cor do header e do footer e substituir, conforme abaixo:
 
 de: .header__3vGR5{background-color:#232f39;  
 #### para : .header__3vGR5{background-color:#003399;
+
 
 de: .footer__Vtfi7{padding:0 100px 0 20px;box-sizing:border-box;background-color:#232f39;
 #### para : .footer__Vtfi7{padding:0 100px 0 20px;box-sizing:border-box;background-color:#003399;
