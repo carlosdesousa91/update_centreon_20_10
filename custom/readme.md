@@ -44,8 +44,19 @@ top: 5px;
 
 ### 02 - barras:
 
-no arquivo /usr/share/centreon/www/template/css/main.31ac5dab.chunk.css localizar a cor do background da barra e do footer e substituir.
+no arquivo /usr/share/centreon/www/static/main.63dc8264.chunk.css localizar a cor do header e do footer e substituir.
 
+de: .header__3vGR5{background-color:#232f39;  
+# para : .header__3vGR5{background-color:#003399;
+
+de: .footer__Vtfi7{padding:0 100px 0 20px;box-sizing:border-box;background-color:#232f39;
+# para : .footer__Vtfi7{padding:0 100px 0 20px;box-sizing:border-box;background-color:#003399;
+
+
+no arquivo /usr/share/centreon/www/static/vendor.e7f5e355.chunk.css  , modificar conforme abaixo:
+
+de: .submenu-top__2firh{position:relative;padding:6px 20px 7px 20px;flex-wrap:wrap;align-items:center;background-color:#232f39}
+# para: .submenu-top__2firh{position:relative;padding:6px 20px 7px 20px;flex-wrap:wrap;align-items:center;background-color:#003399}
 
 
 ### 03 - Hard only:
